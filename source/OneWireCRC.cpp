@@ -84,9 +84,10 @@ sample code bearing this copyright.
 
 #include "OneWireCRC.h"
 #include "OneWireDefs.h"
+#include "nrf_delay.h"
 
 // recommended data sheet timings in micro seconds
-const int standardT[] = {6, 64, 60, 10, 9, 55, 0, 480, 70, 410};
+const int standardT[] = {6, 64, 60, 10, 9, 55, 1, 480, 70, 410};
 const int overdriveT[] = {1.5, 7.5, 7.5, 2.5, 0.75, 7, 2.5, 70, 8.5, 40};
 
 OneWireCRC::OneWireCRC(PinName oneWire, eSpeed speed) : oneWirePort(oneWire)
@@ -105,14 +106,14 @@ int OneWireCRC::reset()
     
     BYTE result = 0;    // sample presence pulse result
         
-    wait_us(timing[6]);
+    nrf_delay_us(timing[6]);
     oneWirePort.output();
     oneWirePort = 0;
-    wait_us(timing[7]);
+    nrf_delay_us(timing[7]);
     oneWirePort.input();
-    wait_us(timing[8]);
+    nrf_delay_us(timing[8]);
     result = !(oneWirePort & 0x01);
-    wait_us(timing[9]);
+    nrf_delay_us(timing[9]);
     
     return result;
 }
@@ -130,18 +131,18 @@ void OneWireCRC::writeBit(int bit)
         // Write '1' bit
         oneWirePort.output();
         oneWirePort = 0;
-        wait_us(timing[0]);
+        nrf_delay_us(timing[0]);
         oneWirePort.input();
-        wait_us(timing[1]);
+        nrf_delay_us(timing[1]);
     }
     else
     {
         // Write '0' bit
         oneWirePort.output();
         oneWirePort = 0;
-        wait_us(timing[2]);
+        nrf_delay_us(timing[2]);
         oneWirePort.input();
-        wait_us(timing[3]);
+        nrf_delay_us(timing[3]);
     }
 }
 
@@ -155,11 +156,11 @@ int OneWireCRC::readBit()
     
     oneWirePort.output();
     oneWirePort = 0;
-    wait_us(timing[0]);
+    nrf_delay_us(timing[0]);
     oneWirePort.input();
-    wait_us(timing[4]);
+    nrf_delay_us(timing[4]);
     result = oneWirePort & 0x01;
-    wait_us(timing[5]);
+    nrf_delay_us(timing[5]);
        
     return result;
 }
